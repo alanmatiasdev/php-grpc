@@ -3,7 +3,7 @@
 [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-alanmatias-blue)](https://hub.docker.com/u/alanmatias)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/alanmatias/php-grpc/graphs/commit-activity)
 
-Pre-built Docker images with PHP 8.2 and gRPC/Protobuf extensions ready to use.
+Pre-built Docker images with PHP 8.2, 8.3 and 8.4 and gRPC/Protobuf extensions ready to use.
 
 ## Available Images
 
@@ -13,38 +13,64 @@ Pre-built Docker images with PHP 8.2 and gRPC/Protobuf extensions ready to use.
 | `php-grpc:8.2-fpm-alpine`  | php:8.2-fpm-alpine      | Lightweight production      | ~100MB |
 | `php-grpc:8.2-cli-alpine`  | php:8.2-cli-alpine3.21  | CLI scripts & microservices | ~90MB  |
 | `php-grpc:8.2-test-runner` | laravel-test-runner:8.2 | Testing & CI/CD             | ~300MB |
+| `php-grpc:8.3-fpm`         | php:8.3-fpm             | Production web applications | ~200MB |
+| `php-grpc:8.3-fpm-alpine`  | php:8.3-fpm-alpine      | Lightweight production      | ~100MB |
+| `php-grpc:8.3-cli-alpine`  | php:8.3-cli-alpine3.21  | CLI scripts & microservices | ~90MB  |
+| `php-grpc:8.3-test-runner` | laravel-test-runner:8.3 | Testing & CI/CD             | ~300MB |
+| `php-grpc:8.4-fpm`         | php:8.4-fpm             | Production web applications | ~200MB |
+| `php-grpc:8.4-fpm-alpine`  | php:8.4-fpm-alpine      | Lightweight production      | ~100MB |
+| `php-grpc:8.4-cli-alpine`  | php:8.4-cli-alpine3.21  | CLI scripts & microservices | ~90MB  |
+| `php-grpc:8.4-test-runner` | laravel-test-runner:8.4 | Testing & CI/CD             | ~300MB |
 
 ## Getting Images
 
 All images are available on Docker Hub and can be pulled directly:
 
 ```bash
-# Pull specific variants
+# PHP 8.2
 docker pull alanmatias/php-grpc:8.2-fpm
 docker pull alanmatias/php-grpc:8.2-fpm-alpine
 docker pull alanmatias/php-grpc:8.2-cli-alpine
 docker pull alanmatias/php-grpc:8.2-test-runner
 
-# Or pull all at once
-docker pull alanmatias/php-grpc:8.2-fpm && \
-docker pull alanmatias/php-grpc:8.2-fpm-alpine && \
-docker pull alanmatias/php-grpc:8.2-cli-alpine && \
-docker pull alanmatias/php-grpc:8.2-test-runner
+# PHP 8.3
+docker pull alanmatias/php-grpc:8.3-fpm
+docker pull alanmatias/php-grpc:8.3-fpm-alpine
+docker pull alanmatias/php-grpc:8.3-cli-alpine
+docker pull alanmatias/php-grpc:8.3-test-runner
+
+# PHP 8.4
+docker pull alanmatias/php-grpc:8.4-fpm
+docker pull alanmatias/php-grpc:8.4-fpm-alpine
+docker pull alanmatias/php-grpc:8.4-cli-alpine
+docker pull alanmatias/php-grpc:8.4-test-runner
 ```
 
 **Docker Hub Repository**: [alanmatias/php-grpc](https://hub.docker.com/r/alanmatias/php-grpc)
 
 ### Image Tags
 
-- `latest` - Points to `8.2-fpm` (production-ready)
+**PHP 8.2**
 - `8.2-fpm` - Full Debian-based FPM image
 - `8.2-fpm-alpine` - Lightweight Alpine FPM image
 - `8.2-cli-alpine` - CLI-only Alpine image
 - `8.2-test-runner` - Testing and CI/CD image
 
+**PHP 8.3**
+- `8.3-fpm` - Full Debian-based FPM image
+- `8.3-fpm-alpine` - Lightweight Alpine FPM image
+- `8.3-cli-alpine` - CLI-only Alpine image
+- `8.3-test-runner` - Testing and CI/CD image
+
+**PHP 8.4**
+- `8.4-fpm` - Full Debian-based FPM image
+- `8.4-fpm-alpine` - Lightweight Alpine FPM image
+- `8.4-cli-alpine` - CLI-only Alpine image
+- `8.4-test-runner` - Testing and CI/CD image
+
 ## Features
 
-- ✅ PHP 8.2 with gRPC extension
+- ✅ PHP 8.2, 8.3 and 8.4 with gRPC extension
 - ✅ Protobuf extension included
 - ✅ Composer pre-installed
 - ✅ Optimized for production use
@@ -172,7 +198,7 @@ Both include:
 
 - `grpc` - gRPC extension for PHP
 - `protobuf` - Protocol Buffers extension
-- Standard PHP 8.2 extensions
+- Standard PHP extensions (8.2, 8.3 and 8.4)
 
 ## Environment Variables
 
@@ -187,7 +213,7 @@ Both include:
 git clone https://github.com/alanmatias/php-grpc.git
 cd php-grpc
 
-# Build specific variant
+# Build specific variant (replace 8.2 with 8.3 or 8.4 as needed)
 docker build -t my-php-grpc:fpm ./8.2/fpm
 docker build -t my-php-grpc:cli ./8.2/cli-alpine
 docker build -t my-php-grpc:test ./8.2/test-runner

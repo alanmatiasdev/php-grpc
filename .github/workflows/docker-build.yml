@@ -7,6 +7,7 @@ on:
       - master
     paths:
       - "8.2/**"
+      - "8.3/**"
       - "8.4/**"
 
 jobs:
@@ -29,6 +30,14 @@ jobs:
               - "8.2/cli-alpine/**"
             test_runner_82:
               - "8.2/test-runner/**"
+            fpm_83:
+              - "8.3/fpm/**"
+            fpm_alpine_83:
+              - "8.3/fpm-alpine/**"
+            cli_alpine_83:
+              - "8.3/cli-alpine/**"
+            test_runner_83:
+              - "8.3/test-runner/**"
             fpm_84:
               - "8.4/fpm/**"
             fpm_alpine_84:
@@ -45,11 +54,15 @@ jobs:
 
           [[ "${{ steps.filter.outputs.fpm_82 }}"          == "true" ]] && INCLUDES+=('{"dir":"8.2/fpm","tag":"8.2-fpm"}')
           [[ "${{ steps.filter.outputs.fpm_alpine_82 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.2/fpm-alpine","tag":"8.2-fpm-alpine"}')
-          [[ "${{ steps.filter.outputs.cli_alpine_82 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.2/cli-alpine","tag":"8.2-cli-alpine"}')
+          [[ "${{ steps.filter.outputs.cli_alpine_82 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.2/cli-alpine","tag":"8.2-cli-alpine3.21"}')
           [[ "${{ steps.filter.outputs.test_runner_82 }}"  == "true" ]] && INCLUDES+=('{"dir":"8.2/test-runner","tag":"8.2-test-runner"}')
+          [[ "${{ steps.filter.outputs.fpm_83 }}"          == "true" ]] && INCLUDES+=('{"dir":"8.3/fpm","tag":"8.3-fpm"}')
+          [[ "${{ steps.filter.outputs.fpm_alpine_83 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.3/fpm-alpine","tag":"8.3-fpm-alpine"}')
+          [[ "${{ steps.filter.outputs.cli_alpine_83 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.3/cli-alpine","tag":"8.3-cli-alpine3.21"}')
+          [[ "${{ steps.filter.outputs.test_runner_83 }}"  == "true" ]] && INCLUDES+=('{"dir":"8.3/test-runner","tag":"8.3-test-runner"}')
           [[ "${{ steps.filter.outputs.fpm_84 }}"          == "true" ]] && INCLUDES+=('{"dir":"8.4/fpm","tag":"8.4-fpm"}')
           [[ "${{ steps.filter.outputs.fpm_alpine_84 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.4/fpm-alpine","tag":"8.4-fpm-alpine"}')
-          [[ "${{ steps.filter.outputs.cli_alpine_84 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.4/cli-alpine","tag":"8.4-cli-alpine"}')
+          [[ "${{ steps.filter.outputs.cli_alpine_84 }}"   == "true" ]] && INCLUDES+=('{"dir":"8.4/cli-alpine","tag":"8.4-cli-alpine3.21"}')
           [[ "${{ steps.filter.outputs.test_runner_84 }}"  == "true" ]] && INCLUDES+=('{"dir":"8.4/test-runner","tag":"8.4-test-runner"}')
 
           JOINED=$(IFS=,; echo "${INCLUDES[*]}")
