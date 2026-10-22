@@ -3,7 +3,7 @@
 [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-alanmatias-blue)](https://hub.docker.com/u/alanmatias)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/alanmatias/php-grpc/graphs/commit-activity)
 
-Pre-built Docker images with PHP 8.2, 8.3 and 8.4 and gRPC/Protobuf extensions ready to use.
+Pre-built Docker images with PHP 8.2, 8.3, 8.4 and 8.5 and gRPC/Protobuf extensions ready to use.
 
 ## Available Images
 
@@ -21,6 +21,10 @@ Pre-built Docker images with PHP 8.2, 8.3 and 8.4 and gRPC/Protobuf extensions r
 | `php-grpc:8.4-fpm-alpine`  | php:8.4-fpm-alpine      | Lightweight production      | ~100MB |
 | `php-grpc:8.4-cli-alpine`  | php:8.4-cli-alpine3.24  | CLI scripts & microservices | ~90MB  |
 | `php-grpc:8.4-test-runner` | laravel-test-runner:8.4 | Testing & CI/CD             | ~300MB |
+| `php-grpc:8.5-fpm`         | php:8.5-fpm             | Production web applications | ~200MB |
+| `php-grpc:8.5-fpm-alpine`  | php:8.5-fpm-alpine      | Lightweight production      | ~100MB |
+| `php-grpc:8.5-cli-alpine`  | php:8.5-cli-alpine3.24  | CLI scripts & microservices | ~90MB  |
+| `php-grpc:8.5-test-runner` | laravel-test-runner:8.5 | Testing & CI/CD             | ~300MB |
 
 ## Getting Images
 
@@ -44,6 +48,12 @@ docker pull alanmatias/php-grpc:8.4-fpm
 docker pull alanmatias/php-grpc:8.4-fpm-alpine
 docker pull alanmatias/php-grpc:8.4-cli-alpine
 docker pull alanmatias/php-grpc:8.4-test-runner
+
+# PHP 8.5
+docker pull alanmatias/php-grpc:8.5-fpm
+docker pull alanmatias/php-grpc:8.5-fpm-alpine
+docker pull alanmatias/php-grpc:8.5-cli-alpine
+docker pull alanmatias/php-grpc:8.5-test-runner
 ```
 
 **Docker Hub Repository**: [alanmatias/php-grpc](https://hub.docker.com/r/alanmatias/php-grpc)
@@ -68,9 +78,15 @@ docker pull alanmatias/php-grpc:8.4-test-runner
 - `8.4-cli-alpine` - CLI-only Alpine image
 - `8.4-test-runner` - Testing and CI/CD image
 
+**PHP 8.5**
+- `8.5-fpm` - Full Debian-based FPM image
+- `8.5-fpm-alpine` - Lightweight Alpine FPM image
+- `8.5-cli-alpine` - CLI-only Alpine image
+- `8.5-test-runner` - Testing and CI/CD image
+
 ### Security
 
-The current images are built on PHP 8.2.35, 8.3.36 and 8.4.27, which fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 announced on 21 October 2026. See the [PHP security announcement](https://www.php.net/archive/2026.php#2026-10-21-5) for details. If you pinned an older version tag, update to the tags above.
+The current images are built on PHP 8.2.35, 8.3.36, 8.4.27 and 8.5.12, which fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 announced on 21 October 2026. See the [PHP security announcement](https://www.php.net/archive/2026.php#2026-10-21-5) for details. If you pinned an older version tag, update to the tags above.
 
 > The `test-runner` images use a third-party base image; rebuild them and check `php -v` to confirm the patched version.
 
@@ -98,6 +114,7 @@ Every image built from an official `php` base also gets a tag with the full PHP 
 | `8.2-fpm-alpine`  | `8.2.35-fpm-alpine`   |
 | `8.3-fpm`         | `8.3.36-fpm`          |
 | `8.4-fpm-alpine`  | `8.4.27-fpm-alpine`   |
+| `8.5-fpm`         | `8.5.12-fpm`          |
 
 The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags always point to the latest build; pinned tags are published for each patch release. `test-runner` images only have the floating tag, since their PHP version comes from a third-party base image.
 
@@ -107,7 +124,7 @@ docker pull alanmatias/php-grpc:8.4.27-fpm
 
 ## Features
 
-- ✅ PHP 8.2, 8.3 and 8.4 with gRPC extension
+- ✅ PHP 8.2, 8.3, 8.4 and 8.5 with gRPC extension
 - ✅ Protobuf extension included
 - ✅ Composer pre-installed
 - ✅ Optimized for production use
@@ -235,7 +252,7 @@ Both include:
 
 - `grpc` - gRPC extension for PHP
 - `protobuf` - Protocol Buffers extension
-- Standard PHP extensions (8.2, 8.3 and 8.4)
+- Standard PHP extensions (8.2, 8.3, 8.4 and 8.5)
 
 ## Environment Variables
 
@@ -250,7 +267,7 @@ Both include:
 git clone https://github.com/alanmatias/php-grpc.git
 cd php-grpc
 
-# Build specific variant (replace 8.2 with 8.3 or 8.4 as needed)
+# Build specific variant (replace 8.2 with 8.3, 8.4 or 8.5 as needed)
 docker build -t my-php-grpc:fpm ./8.2/fpm
 docker build -t my-php-grpc:cli ./8.2/cli-alpine
 docker build -t my-php-grpc:test ./8.2/test-runner

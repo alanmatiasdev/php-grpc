@@ -11,7 +11,7 @@ acknowledgement within a few days.
 
 ## Supported images
 
-Only the images published from `main` are supported: PHP 8.2, 8.3 and 8.4 in the `fpm`,
+Only the images published from `main` are supported: PHP 8.2, 8.3, 8.4 and 8.5 in the `fpm`,
 `fpm-alpine`, `cli-alpine` and `test-runner` variants.
 
 ## How the images are protected
