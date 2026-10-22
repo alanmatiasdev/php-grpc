@@ -4,7 +4,8 @@ LABEL maintainer="Alan Matias <me@alanmatias.dev>"
 ARG GRPC_VERSION=1.84.0
 ARG PROTOBUF_VERSION=5.36.2
 
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk add --no-cache libstdc++ \
+    && apk add --no-cache --virtual .build-deps \
         $PHPIZE_DEPS \
         grpc-dev \
         protobuf-dev \

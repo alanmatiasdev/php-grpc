@@ -76,7 +76,7 @@ The current images are built on PHP 8.2.35, 8.3.36 and 8.4.27, which fix the cri
 
 #### Supply chain
 
-- Every image is built, smoke-tested (PHP, gRPC and Protobuf versions) and scanned with [Trivy](https://trivy.dev) before it is published. Fixable `HIGH` and `CRITICAL` vulnerabilities block the publish.
+- Every image is built, smoke-tested (PHP, gRPC and Protobuf versions) and scanned with [Trivy](https://trivy.dev) before it is published. Fixable `HIGH` and `CRITICAL` vulnerabilities block the publish, except for `test-runner`, whose findings come from a third-party base image and are only reported.
 - All images are rebuilt every Monday so base image patches reach the floating and pinned tags. A pinned tag such as `8.4.27-fpm` therefore keeps the same PHP version but may receive OS-level updates.
 - Published images include an SBOM and a provenance attestation, and are signed with [cosign](https://github.com/sigstore/cosign) (keyless). To verify an image:
 
