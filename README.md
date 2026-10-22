@@ -77,7 +77,7 @@ The current images are built on PHP 8.2.35, 8.3.36 and 8.4.27, which fix the cri
 #### Supply chain
 
 - Every image is built, smoke-tested (PHP, gRPC and Protobuf versions) and scanned with [Trivy](https://trivy.dev) before it is published. Fixable `HIGH` and `CRITICAL` vulnerabilities block the publish.
-- All images are rebuilt every Monday so base image patches reach the floating and pinned tags. A pinned tag such as `8.4.27-fpm` therefore keeps the same PHP version but may receive OS-level updates.
+- Images are pushed to the registry only when a release is cut. A build runs for every pull request and every Monday against the latest base images, so a base image problem is caught even between releases, and Dependabot proposes base image bumps, each of which cuts a patch release of the affected image.
 - Published images include an SBOM and a provenance attestation, and are signed with [cosign](https://github.com/sigstore/cosign) (keyless). To verify an image:
 
 ```bash
@@ -99,11 +99,15 @@ Every image built from an official `php` base also gets a tag with the full PHP 
 | `8.3-fpm`         | `8.3.36-fpm`          |
 | `8.4-fpm-alpine`  | `8.4.27-fpm-alpine`   |
 
-The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags always point to the latest build; pinned tags are published for each patch release.
+The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags (`8.4-fpm`) point to the latest release of that image. Pinned tags (`8.4.27-fpm`) keep the PHP version but can be republished by a later release of the same image. Each release also gets a tag with its version, e.g. `8.4-fpm-1.0.0`, which you can pin to.
 
 ```bash
 docker pull alanmatias/php-grpc:8.4.27-fpm
 ```
+
+### Releases and changelogs
+
+Each image has its own [GitHub release](https://github.com/alanmatiasdev/php-grpc/releases) and changelog, versioned with [Semantic Versioning](https://semver.org/). Releases are created automatically by [release-please](https://github.com/googleapis/release-please) from [Conventional Commits](https://www.conventionalcommits.org/) and tagged `<php>-<variant>/vX.Y.Z`, for example `8.4-fpm/v1.0.0`. The changelog sits next to the Dockerfile (`8.4/fpm/CHANGELOG.md`), and images are pushed to the registry only when a release is cut. The release version tracks changes to the image definition; the PHP patch version is in the Docker tag (`8.4.27-fpm`). Repository-wide notes are in [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
 
@@ -112,7 +116,7 @@ docker pull alanmatias/php-grpc:8.4.27-fpm
 - ✅ Composer pre-installed
 - ✅ Optimized for production use
 - ✅ Multiple variants for different use cases
-- ✅ Regular security updates
+- ✅ Scanned, signed and released per image
 
 ## Quick Start
 

@@ -29,7 +29,7 @@ entries are grouped by change rather than by version.
 
 The `test-runner` images no longer extend `kirschbaumdevelopment/laravel-test-runner`. They are now
 built here from the official `php:X.Y.Z-cli` image (Debian), so they get pinned PHP patch versions
-(`8.4.27-test-runner`), weekly rebuilds and the same scan as the other variants.
+(`8.4.27-test-runner`) and the same scan as the other variants.
 
 Differences you may notice:
 
@@ -44,12 +44,13 @@ Differences you may notice:
 
 ### Security
 
-- Images are now scanned with Trivy, smoke-tested, rebuilt weekly, and published with an SBOM,
-  provenance and a cosign signature. See the README for details.
+- Images are now scanned with Trivy, smoke-tested, and published with an SBOM, provenance and a
+  cosign signature. See the README for details.
 
 ### Changed
 
 - Build inputs are pinned: `install-php-extensions` (with checksum), `grpc` 1.84.0, `protobuf`
   5.36.2, Composer and the Node.js image by digest.
-- Tags are overwritten on every weekly rebuild: the PHP version stays the same, OS packages are
-  refreshed.
+- Images are pushed to the registry only when a release is cut. Releases are created per image by
+  release-please from Conventional Commits, tagged `<php>-<variant>/vX.Y.Z`, and each has its own
+  `CHANGELOG.md` next to the Dockerfile. A weekly run builds and scans without publishing.
