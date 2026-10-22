@@ -34,3 +34,15 @@ fi
 if [[ "$dockerfile" == *fpm* ]]; then
   run php-fpm -t
 fi
+
+if [[ "$dockerfile" == *test-runner* ]]; then
+  # What the former third-party base promised: Laravel-ready extensions and the usual CI tooling
+  for ext in bcmath bz2 calendar exif gd gmp imap intl ldap mysqli pcntl pdo_mysql pdo_pgsql pgsql redis soap xsl zip; do
+    run php -r "exit(extension_loaded('$ext') ? 0 : 1);" || { echo "::error::missing PHP extension: $ext ($image)"; exit 1; }
+  done
+  for tool in node npm yarn git mysql unzip; do
+    run sh -c "command -v $tool" >/dev/null || { echo "::error::missing tool: $tool ($image)"; exit 1; }
+  done
+  check "npm" "$(sed -nE 's/^ARG NPM_VERSION=(.*)/\1/p' "$dockerfile")" "$(run npm --version)"
+  check "yarn" "$(sed -nE 's/^ARG YARN_VERSION=(.*)/\1/p' "$dockerfile")" "$(run yarn --version)"
+fi

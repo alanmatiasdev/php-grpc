@@ -147,8 +147,6 @@ jobs:
           sarif_file: trivy.sarif
           category: trivy-${{ matrix.tag }}
 
-      # The test-runner images extend a third-party base we do not control, so findings there
-      # are reported but do not block the publish.
       - name: Scan image with Trivy (gate)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
@@ -157,7 +155,7 @@ jobs:
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           format: table
-          exit-code: ${{ endsWith(matrix.dir, '/test-runner') && '0' || '1' }}
+          exit-code: "1"
 
       # Everything below only runs once the image built, passed its smoke test and the scan
       - name: Log in to Docker Hub

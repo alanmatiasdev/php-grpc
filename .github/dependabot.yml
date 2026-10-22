@@ -23,5 +23,6 @@ updates:
       # Each directory tracks one PHP minor line; only patch releases should be proposed
       - dependency-name: php
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: kirschbaumdevelopment/laravel-test-runner
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Node.js stays on the current LTS line until we move it on purpose
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
