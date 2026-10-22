@@ -5,7 +5,7 @@ ARG GRPC_VERSION=1.84.0
 ARG PROTOBUF_VERSION=5.36.2
 
 RUN apt-get update && apt-get install -y \
-    php8.2-dev \
+    php8.4-dev \
     make \
     autoconf \
     gcc \
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     libgrpc-dev \
     protobuf-compiler \
     && pecl install grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION} \
-    && echo "extension=grpc.so" > /etc/php/8.2/cli/conf.d/20-grpc.ini \
-    && echo "extension=protobuf.so" > /etc/php/8.2/cli/conf.d/20-protobuf.ini \
-    && apt-get purge -y --auto-remove make autoconf gcc g++ pkg-config libgrpc-dev protobuf-compiler php8.2-dev \
+    && echo "extension=grpc.so" > /etc/php/8.4/cli/conf.d/20-grpc.ini \
+    && echo "extension=protobuf.so" > /etc/php/8.4/cli/conf.d/20-protobuf.ini \
+    && apt-get purge -y --auto-remove make autoconf gcc g++ pkg-config libgrpc-dev protobuf-compiler php8.4-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
