@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  - package-ecosystem: docker
+    directories:
+      - /8.2/*
+      - /8.3/*
+      - /8.4/*
+    schedule:
+      interval: daily
+    ignore:
+      # Each directory tracks one PHP minor line; only patch releases should be proposed
+      - dependency-name: php
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: kirschbaumdevelopment/laravel-test-runner
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

@@ -74,6 +74,20 @@ The current images are built on PHP 8.2.35, 8.3.36 and 8.4.27, which fix the cri
 
 > The `test-runner` images use a third-party base image; rebuild them and check `php -v` to confirm the patched version.
 
+#### Supply chain
+
+- Every image is built, smoke-tested (PHP, gRPC and Protobuf versions) and scanned with [Trivy](https://trivy.dev) before it is published. Fixable `HIGH` and `CRITICAL` vulnerabilities block the publish.
+- All images are rebuilt every Monday so base image patches reach the floating and pinned tags. A pinned tag such as `8.4.27-fpm` therefore keeps the same PHP version but may receive OS-level updates.
+- Published images include an SBOM and a provenance attestation, and are signed with [cosign](https://github.com/sigstore/cosign) (keyless). To verify an image:
+
+```bash
+cosign verify alanmatias/php-grpc:8.4-fpm \
+  --certificate-identity-regexp '^https://github.com/alanmatiasdev/php-grpc/' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
+
 ### Version Tags
 
 Every image built from an official `php` base also gets a tag with the full PHP version, so you can pin to an exact release:

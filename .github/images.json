@@ -1,0 +1,14 @@
+[
+  { "dir": "8.2/fpm", "tag": "8.2-fpm" },
+  { "dir": "8.2/fpm-alpine", "tag": "8.2-fpm-alpine" },
+  { "dir": "8.2/cli-alpine", "tag": "8.2-cli-alpine3.21" },
+  { "dir": "8.2/test-runner", "tag": "8.2-test-runner" },
+  { "dir": "8.3/fpm", "tag": "8.3-fpm" },
+  { "dir": "8.3/fpm-alpine", "tag": "8.3-fpm-alpine" },
+  { "dir": "8.3/cli-alpine", "tag": "8.3-cli-alpine3.21" },
+  { "dir": "8.3/test-runner", "tag": "8.3-test-runner" },
+  { "dir": "8.4/fpm", "tag": "8.4-fpm" },
+  { "dir": "8.4/fpm-alpine", "tag": "8.4-fpm-alpine" },
+  { "dir": "8.4/cli-alpine", "tag": "8.4-cli-alpine3.21" },
+  { "dir": "8.4/test-runner", "tag": "8.4-test-runner" }
+]
