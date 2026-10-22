@@ -43,6 +43,8 @@ if [[ "$dockerfile" == *test-runner* ]]; then
     run php -r "exit(extension_loaded('$name') ? 0 : 1);" || { echo "::error::missing PHP extension: $ext ($image)"; missing=1; }
   done
   [[ -z "${missing:-}" ]] || exit 1
+  # The former base ran the CLI with no memory limit; the official image defaults to 128M
+  check "memory_limit" "-1" "$(run php -r 'echo ini_get("memory_limit");')"
   for tool in node npm yarn git mysql unzip; do
     run sh -c "command -v $tool" >/dev/null || { echo "::error::missing tool: $tool ($image)"; exit 1; }
   done

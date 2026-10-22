@@ -10,7 +10,7 @@ ARG YARN_VERSION=1.22.22
 
 ENV COMPOSER_HOME=/composer \
     COMPOSER_ALLOW_SUPERUSER=1 \
-    PATH=./vendor/bin:/composer/vendor/bin:${PATH}
+    PATH=./vendor/bin:/composer/vendor/bin:/root/.yarn/bin:${PATH}
 
 ADD --checksum=sha256:9c26dd516b8147235c4e924c52e2f076fb2b3f278f5457e88918518ebfee9e01 https://github.com/mlocati/docker-php-extension-installer/releases/download/2.12.3/install-php-extensions /usr/local/bin/
 
@@ -30,6 +30,7 @@ RUN set -eux; \
         bcmath bz2 calendar exif gd gettext gmp imap intl ldap mysqli opcache pcntl pcov \
         pdo_mysql pdo_pgsql pgsql redis shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
         grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
+    printf 'memory_limit=-1\n' > "$PHP_INI_DIR/conf.d/zz-test-runner.ini"; \
     apt-get clean && rm -rf /var/lib/apt/lists/*; \
     rm -rf /usr/local/lib/node_modules/corepack; \
     ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm; \
