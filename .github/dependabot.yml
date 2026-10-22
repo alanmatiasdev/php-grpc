@@ -4,6 +4,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 7
     groups:
       actions:
         patterns: ["*"]
@@ -15,6 +17,8 @@ updates:
       - /8.4/*
     schedule:
       interval: daily
+    cooldown:
+      default-days: 7
     ignore:
       # Each directory tracks one PHP minor line; only patch releases should be proposed
       - dependency-name: php
