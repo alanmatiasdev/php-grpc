@@ -27,8 +27,8 @@ RUN set -eux; \
         mariadb-client \
         unzip; \
     install-php-extensions \
-        bcmath bz2 calendar exif gd gmp imap intl ldap mysqli pcntl pcov \
-        pdo_mysql pdo_pgsql pgsql redis soap xsl zip \
+        bcmath bz2 calendar exif gd gettext gmp imap intl ldap mysqli opcache pcntl pcov \
+        pdo_mysql pdo_pgsql pgsql redis shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
         grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
     apt-get clean && rm -rf /var/lib/apt/lists/*; \
     rm -rf /usr/local/lib/node_modules/corepack; \

@@ -37,9 +37,12 @@ fi
 
 if [[ "$dockerfile" == *test-runner* ]]; then
   # What the former third-party base promised: Laravel-ready extensions and the usual CI tooling
-  for ext in bcmath bz2 calendar exif gd gmp imap intl ldap mysqli pcntl pdo_mysql pdo_pgsql pgsql redis soap xsl zip; do
-    run php -r "exit(extension_loaded('$ext') ? 0 : 1);" || { echo "::error::missing PHP extension: $ext ($image)"; exit 1; }
+  for ext in bcmath bz2 calendar exif gd gettext gmp imap intl ldap mbstring mysqli opcache pcntl pdo_mysql pdo_pgsql pdo_sqlite pgsql redis shmop soap sockets sqlite3 sysvmsg sysvsem sysvshm xsl zip curl dom; do
+    name=$ext
+    [[ "$ext" == opcache ]] && name='Zend OPcache' # registered under its product name
+    run php -r "exit(extension_loaded('$name') ? 0 : 1);" || { echo "::error::missing PHP extension: $ext ($image)"; missing=1; }
   done
+  [[ -z "${missing:-}" ]] || exit 1
   for tool in node npm yarn git mysql unzip; do
     run sh -c "command -v $tool" >/dev/null || { echo "::error::missing tool: $tool ($image)"; exit 1; }
   done

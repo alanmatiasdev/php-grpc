@@ -9,6 +9,7 @@ on:
       - "8.2/**"
       - "8.3/**"
       - "8.4/**"
+      - "8.5/**"
       - ".github/images.json"
       - ".github/scripts/**"
       - ".github/workflows/docker-build.yml"
