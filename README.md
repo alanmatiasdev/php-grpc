@@ -77,7 +77,7 @@ The current images are built on PHP 8.2.35, 8.3.36 and 8.4.27, which fix the cri
 #### Supply chain
 
 - Every image is built, smoke-tested (PHP, gRPC and Protobuf versions) and scanned with [Trivy](https://trivy.dev) before it is published. Fixable `HIGH` and `CRITICAL` vulnerabilities block the publish.
-- All images are rebuilt every Monday so base image patches reach the floating and pinned tags. A pinned tag such as `8.4.27-fpm` therefore keeps the same PHP version but may receive OS-level updates.
+- Images are pushed to the registry when a release is cut and every Monday, when every image is rebuilt on the latest base images so OS patches reach the same tags (no new release is created). Pull requests build and scan without publishing. Dependabot proposes base image bumps, each of which cuts a patch release of the affected image.
 - Published images include an SBOM and a provenance attestation, and are signed with [cosign](https://github.com/sigstore/cosign) (keyless). To verify an image:
 
 ```bash
@@ -99,11 +99,15 @@ Every image built from an official `php` base also gets a tag with the full PHP 
 | `8.3-fpm`         | `8.3.36-fpm`          |
 | `8.4-fpm-alpine`  | `8.4.27-fpm-alpine`   |
 
-The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags always point to the latest build; pinned tags are published for each patch release.
+The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags (`8.4-fpm`) point to the latest release of that image. `8.4.27-fpm` always points to the latest revision built on PHP 8.4.27. A change to an image that does not move PHP is published as a revision, `8.4.27-fpm-r2`, `8.4.27-fpm-r3` and so on, which you can pin to.
 
 ```bash
 docker pull alanmatias/php-grpc:8.4.27-fpm
 ```
+
+### Releases and changelogs
+
+Each image has its own [GitHub release](https://github.com/alanmatiasdev/php-grpc/releases) with its own changelog, named after the PHP version it ships: `8.4.27-fpm`, `8.4.27-cli-alpine3.21`, `8.4.27-test-runner`. A new PHP version cuts a new release automatically (Dependabot proposes the base image bump). A change that keeps the same PHP version, such as a fix or a new extension version, cuts a revision of the same release: `8.4.27-fpm-r2`. Releases are generated from [Conventional Commits](https://www.conventionalcommits.org/) that touch the image's directory (`feat`, `fix`, `perf`, `revert` or a breaking change; `docs`, `ci` and `chore` do not cut a release), and images are pushed to the registry when a release is cut and by the weekly rebuild (which does not create a release). Repository-wide notes are in [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
 
@@ -112,7 +116,7 @@ docker pull alanmatias/php-grpc:8.4.27-fpm
 - ✅ Composer pre-installed
 - ✅ Optimized for production use
 - ✅ Multiple variants for different use cases
-- ✅ Regular security updates
+- ✅ Scanned, signed and released per image
 
 ## Quick Start
 

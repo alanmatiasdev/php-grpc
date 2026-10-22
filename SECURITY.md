@@ -18,6 +18,8 @@ Only the images published from `main` are supported: PHP 8.2, 8.3 and 8.4 in the
 
 - Every image is scanned with Trivy before it is published; HIGH and CRITICAL vulnerabilities that
   have a fix block the publish.
-- Images are rebuilt weekly to pick up base image patches.
+- Images are pushed to the registry when a release is cut and by a weekly rebuild on the latest base
+  images (which does not create a release). Pull requests build and scan without publishing, and
+  Dependabot proposes base image bumps.
 - Published images carry an SBOM and provenance attestation and are signed with cosign (keyless).
 - Dependencies (PHP base images, Composer, GitHub Actions) are tracked by Dependabot.

@@ -1,19 +1,9 @@
 name: Docker Build & Push
 
+# Images are pushed to the registry when a release is cut (see release.yml), by the weekly run
+# (to pick up base image patches under the same PHP version) or when this workflow is dispatched
+# by hand with `publish` enabled. Pull requests build, test and scan without publishing.
 on:
-  push:
-    branches:
-      - main
-      - master
-    paths:
-      - "8.2/**"
-      - "8.3/**"
-      - "8.4/**"
-      - ".github/images.json"
-      - ".github/scripts/**"
-      - ".github/workflows/docker-build.yml"
-      - ".hadolint.yaml"
-      - ".trivyignore"
   pull_request:
     paths:
       - "8.2/**"
@@ -25,9 +15,29 @@ on:
       - ".hadolint.yaml"
       - ".trivyignore"
   schedule:
-    # Weekly rebuild of every image to pick up base image patches
+    # Weekly rebuild, scan and publish of every image against the latest base image patches (no release)
     - cron: "17 4 * * 1"
   workflow_dispatch:
+    inputs:
+      publish:
+        description: Push every image to the registry
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      publish:
+        description: Push the images to the registry
+        type: boolean
+        default: false
+      releases:
+        description: 'JSON array of releases to build, e.g. [{"dir":"8.4/fpm","release":"8.4.27-fpm"}] (all images when empty)'
+        type: string
+        default: ""
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: false
+      DOCKERHUB_TOKEN:
+        required: false
 
 permissions:
   contents: read
@@ -51,23 +61,25 @@ jobs:
         id: build-matrix
         env:
           EVENT: ${{ github.event_name }}
-          BEFORE: ${{ github.event.before }}
           BASE_REF: ${{ github.base_ref }}
+          RELEASES: ${{ inputs.releases }}
         run: |
           set -euo pipefail
 
-          # Scheduled and manual runs rebuild everything; so does a push without a usable previous commit
+          # A release builds the released images; scheduled and manual runs build everything
+          if [[ -n "$RELEASES" ]]; then
+            MATRIX=$(jq -c --argjson releases "$RELEASES" '
+              {include: [ .[] | . as $image | $releases[] | select(.dir == $image.dir) | $image + {release: .release} ]}
+            ' .github/images.json)
+            echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
+            jq . <<< "$MATRIX"
+            exit 0
+          fi
+
           ALL=false
           case "$EVENT" in
-            schedule|workflow_dispatch) ALL=true ;;
             pull_request) CHANGED=$(git diff --name-only "origin/${BASE_REF}...HEAD") ;;
-            *)
-              if [[ "$BEFORE" =~ ^0+$ ]] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
-                ALL=true
-              else
-                CHANGED=$(git diff --name-only "$BEFORE" HEAD)
-              fi
-              ;;
+            *) ALL=true ;;
           esac
 
           # A change to the build tooling itself rebuilds everything
@@ -91,7 +103,7 @@ jobs:
     if: needs.detect-changes.outputs.matrix != '{"include":[]}'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write # create the release once the image is published
       security-events: write # upload Trivy results
       id-token: write # keyless cosign signing
     strategy:
@@ -157,21 +169,22 @@ jobs:
           format: table
           exit-code: "1"
 
-      # Everything below only runs once the image built, passed its smoke test and the scan
+      # Everything below only runs when publishing, once the image built, passed its smoke test and the scan
       - name: Log in to Docker Hub
-        if: github.event_name != 'pull_request'
+        if: inputs.publish || github.event_name == 'schedule'
         uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Resolve tags
-        if: github.event_name != 'pull_request'
+        if: inputs.publish || github.event_name == 'schedule'
         id: tags
         env:
           IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/php-grpc
           DIR: ${{ matrix.dir }}
           TAG: ${{ matrix.tag }}
+          RELEASE: ${{ matrix.release }}
         run: |
           TAGS="${IMAGE}:${TAG}"
 
@@ -179,6 +192,11 @@ jobs:
           VERSION=$(sed -nE 's/^FROM php:([0-9]+\.[0-9]+\.[0-9]+)-.*/\1/p' "${DIR}/Dockerfile")
           if [[ -n "$VERSION" ]]; then
             TAGS+=$'\n'"${IMAGE}:${VERSION}-${TAG#*-}"
+          fi
+
+          # A revision release (8.4.27-fpm-r2) is also pushed under its own tag, so it can be pinned
+          if [[ "$RELEASE" =~ -r[0-9]+$ ]]; then
+            TAGS+=$'\n'"${IMAGE}:${RELEASE}"
           fi
 
           {
@@ -189,7 +207,7 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Push image
-        if: github.event_name != 'pull_request'
+        if: inputs.publish || github.event_name == 'schedule'
         id: push
         uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
@@ -202,12 +220,26 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.tag }}
 
       - name: Install cosign
-        if: github.event_name != 'pull_request'
+        if: inputs.publish || github.event_name == 'schedule'
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
       - name: Sign image
-        if: github.event_name != 'pull_request'
+        if: inputs.publish || github.event_name == 'schedule'
         env:
           IMAGE: ${{ steps.tags.outputs.image }}
           DIGEST: ${{ steps.push.outputs.digest }}
         run: cosign sign --yes "${IMAGE}@${DIGEST}"
+
+      # The release is created last, so an image that was not published never gets one
+      - name: Create release
+        if: inputs.publish && matrix.release != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DIR: ${{ matrix.dir }}
+          TAG: ${{ matrix.tag }}
+          RELEASE: ${{ matrix.release }}
+        run: |
+          git fetch --tags --force --unshallow 2>/dev/null || git fetch --tags --force
+          .github/scripts/release-notes.sh "$DIR" "$TAG" "$RELEASE" > release-notes.md
+          gh release create "$RELEASE" --target "$GITHUB_SHA" --title "$RELEASE" --notes-file release-notes.md --latest=false
