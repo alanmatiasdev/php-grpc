@@ -251,7 +251,8 @@ Both include:
 - **php-grpc:8.2-test-runner**: Debian-based CLI image built from the official `php` image, for running Laravel and PHP test suites in CI
 - Extensions: everything the former base shipped (`bcmath`, `bz2`, `calendar`, `exif`, `gd`, `gettext`, `gmp`, `imap`, `intl`, `ldap`, `mysqli`, `opcache`, `pcntl`, `pdo_mysql`, `pdo_pgsql`, `pgsql`, `redis`, `shmop`, `soap`, `sockets`, `sysvmsg`, `sysvsem`, `sysvshm`, `xsl`, `zip`), the official image's own (`mbstring`, `curl`, `dom`, `pdo_sqlite`, `sqlite3`, `xml`, …), `pcov` for coverage, plus `grpc` and `protobuf`
 - Tools: Composer, Node.js 24, npm, Yarn, git and the MySQL/MariaDB client
-- Code coverage uses `pcov` (there is no `phpdbg`)
+- Code coverage uses `pcov`
+- `memory_limit` is `-1`, like the previous base image
 - Add other extensions with `install-php-extensions <name>` (or `docker-php-ext-install`)
 
 ## Extensions Included
