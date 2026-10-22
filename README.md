@@ -72,6 +72,8 @@ docker pull alanmatias/php-grpc:8.4-test-runner
 
 The current images are built on PHP 8.2.35, 8.3.36 and 8.4.27, which fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 announced on 21 October 2026. See the [PHP security announcement](https://www.php.net/archive/2026.php#2026-10-21-5) for details. If you pinned an older version tag, update to the tags above.
 
+> **Alpine users:** images published before this fix could not load the `grpc` extension (missing `libstdc++`). Pull the Alpine tags again; see the [changelog](CHANGELOG.md) for how to check.
+
 > The `test-runner` images use a third-party base image; rebuild them and check `php -v` to confirm the patched version.
 
 #### Supply chain
