@@ -1,4 +1,4 @@
-FROM php:8.4-cli-alpine3.21
+FROM php:8.4.27-cli-alpine3.24
 LABEL maintainer="Alan Matias <me@alanmatias.dev>"
 
 RUN apk add --no-cache --virtual .build-deps \
