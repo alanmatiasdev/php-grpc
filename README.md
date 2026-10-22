@@ -12,15 +12,15 @@ Pre-built Docker images with PHP 8.2, 8.3 and 8.4 and gRPC/Protobuf extensions r
 | `php-grpc:8.2-fpm`         | php:8.2-fpm             | Production web applications | ~200MB |
 | `php-grpc:8.2-fpm-alpine`  | php:8.2-fpm-alpine      | Lightweight production      | ~100MB |
 | `php-grpc:8.2-cli-alpine`  | php:8.2-cli-alpine3.24  | CLI scripts & microservices | ~90MB  |
-| `php-grpc:8.2-test-runner` | laravel-test-runner:8.2 | Testing & CI/CD             | ~300MB |
+| `php-grpc:8.2-test-runner` | php:8.2-cli             | Testing & CI/CD             | —      |
 | `php-grpc:8.3-fpm`         | php:8.3-fpm             | Production web applications | ~200MB |
 | `php-grpc:8.3-fpm-alpine`  | php:8.3-fpm-alpine      | Lightweight production      | ~100MB |
 | `php-grpc:8.3-cli-alpine`  | php:8.3-cli-alpine3.24  | CLI scripts & microservices | ~90MB  |
-| `php-grpc:8.3-test-runner` | laravel-test-runner:8.3 | Testing & CI/CD             | ~300MB |
+| `php-grpc:8.3-test-runner` | php:8.3-cli             | Testing & CI/CD             | —      |
 | `php-grpc:8.4-fpm`         | php:8.4-fpm             | Production web applications | ~200MB |
 | `php-grpc:8.4-fpm-alpine`  | php:8.4-fpm-alpine      | Lightweight production      | ~100MB |
 | `php-grpc:8.4-cli-alpine`  | php:8.4-cli-alpine3.24  | CLI scripts & microservices | ~90MB  |
-| `php-grpc:8.4-test-runner` | laravel-test-runner:8.4 | Testing & CI/CD             | ~300MB |
+| `php-grpc:8.4-test-runner` | php:8.4-cli             | Testing & CI/CD             | —      |
 
 ## Getting Images
 
@@ -72,7 +72,21 @@ docker pull alanmatias/php-grpc:8.4-test-runner
 
 The current images are built on PHP 8.2.35, 8.3.36 and 8.4.27, which fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 announced on 21 October 2026. See the [PHP security announcement](https://www.php.net/archive/2026.php#2026-10-21-5) for details. If you pinned an older version tag, update to the tags above.
 
-> The `test-runner` images use a third-party base image; rebuild them and check `php -v` to confirm the patched version.
+> **Alpine users:** images published before this fix could not load the `grpc` extension (missing `libstdc++`). Pull the Alpine tags again; see the [changelog](CHANGELOG.md) for how to check.
+
+#### Supply chain
+
+- Every image is built, smoke-tested (PHP, gRPC and Protobuf versions) and scanned with [Trivy](https://trivy.dev) before it is published. Fixable `HIGH` and `CRITICAL` vulnerabilities block the publish.
+- All images are rebuilt every Monday so base image patches reach the floating and pinned tags. A pinned tag such as `8.4.27-fpm` therefore keeps the same PHP version but may receive OS-level updates.
+- Published images include an SBOM and a provenance attestation, and are signed with [cosign](https://github.com/sigstore/cosign) (keyless). To verify an image:
+
+```bash
+cosign verify alanmatias/php-grpc:8.4-fpm \
+  --certificate-identity-regexp '^https://github.com/alanmatiasdev/php-grpc/' \
+  --certificate-oidc-issuer https://token.actions.githubusercontent.com
+```
+
+To report a vulnerability, see [SECURITY.md](SECURITY.md).
 
 ### Version Tags
 
@@ -85,7 +99,7 @@ Every image built from an official `php` base also gets a tag with the full PHP 
 | `8.3-fpm`         | `8.3.36-fpm`          |
 | `8.4-fpm-alpine`  | `8.4.27-fpm-alpine`   |
 
-The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags always point to the latest build; pinned tags are published for each patch release. `test-runner` images only have the floating tag, since their PHP version comes from a third-party base image.
+The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags always point to the latest build; pinned tags are published for each patch release.
 
 ```bash
 docker pull alanmatias/php-grpc:8.4.27-fpm
@@ -213,9 +227,11 @@ Both include:
 
 ### Test Runner
 
-- **php-grpc:8.2-test-runner**: Based on Laravel test runner
-- Includes additional testing tools
-- Ideal for CI/CD pipelines
+- **php-grpc:8.2-test-runner**: Debian-based CLI image built from the official `php` image, for running Laravel and PHP test suites in CI
+- Extensions: `bcmath`, `bz2`, `calendar`, `exif`, `gd`, `gmp`, `imap`, `intl`, `ldap`, `mysqli`, `pcntl`, `pcov`, `pdo_mysql`, `pdo_pgsql`, `pgsql`, `redis`, `soap`, `xsl`, `zip`, plus `grpc` and `protobuf`
+- Tools: Composer, Node.js 24, npm, Yarn, git and the MySQL/MariaDB client
+- Code coverage uses `pcov` (there is no `phpdbg`)
+- Add other extensions with `install-php-extensions <name>` (or `docker-php-ext-install`)
 
 ## Extensions Included
 

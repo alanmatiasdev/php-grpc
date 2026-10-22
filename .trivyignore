@@ -1,0 +1,2 @@
+# CVEs accepted after review. One ID per line, with a comment explaining why and an expiry date, e.g.:
+# CVE-2026-0000  # not reachable: <reason>, revisit by 2026-12-01
