@@ -20,5 +20,4 @@ RUN set -eux; \
         libzip-dev; \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /var/www# q
-# q2
+WORKDIR /var/www
