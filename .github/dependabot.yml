@@ -6,6 +6,8 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    commit-message:
+      prefix: "ci"
     groups:
       actions:
         patterns: ["*"]
@@ -15,13 +17,18 @@ updates:
       - /8.2/*
       - /8.3/*
       - /8.4/*
+      - /8.5/*
     schedule:
       interval: daily
     cooldown:
       default-days: 7
+    commit-message:
+      # "fix" lets a base image bump cut a release of the image that was bumped
+      prefix: "fix(docker)"
     ignore:
       # Each directory tracks one PHP minor line; only patch releases should be proposed
       - dependency-name: php
         update-types: ["version-update:semver-major", "version-update:semver-minor"]
-      - dependency-name: kirschbaumdevelopment/laravel-test-runner
-        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # Node.js stays on the current LTS line until we move it on purpose
+      - dependency-name: node
+        update-types: ["version-update:semver-major"]
