@@ -41,6 +41,7 @@ Differences you may notice:
 - **OS and package manager:** Debian instead of Ubuntu 22.04. `apt-get install php8.x-<ext>` no
   longer works; use `install-php-extensions <ext>` or `docker-php-ext-install`.
 - **Node.js 24** instead of 20 (Node 20 is end of life). npm and Yarn are pinned.
+- **Extensions:** the extensions of the former base are kept, including `sockets`, `gettext`, `shmop`, `sysv*` and `opcache` (disabled for the CLI by default, as before).
 - **Coverage:** `pcov` is installed; `phpdbg` is not.
 - **MySQL client:** `mysql` is provided by MariaDB's client.
 - **PHP version:** the previous 8.3 and 8.4 images installed `php8.2-dev` and could run PHP 8.2
