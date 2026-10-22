@@ -1,6 +1,6 @@
 name: Docker Build & Push
 
-# Images are pushed to the registry only when a release is cut (see release-please.yml) or when
+# Images are pushed to the registry only when a release is cut (see release.yml) or when
 # this workflow is dispatched by hand with `publish` enabled. Pull requests and the weekly run
 # build, test and scan without publishing.
 on:
@@ -29,8 +29,8 @@ on:
         description: Push the images to the registry
         type: boolean
         default: false
-      paths:
-        description: JSON array of image directories to build (all images when empty)
+      releases:
+        description: 'JSON array of releases to build, e.g. [{"dir":"8.4/fpm","release":"8.4.27-fpm"}] (all images when empty)'
         type: string
         default: ""
     secrets:
@@ -62,14 +62,14 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           BASE_REF: ${{ github.base_ref }}
-          RELEASED_PATHS: ${{ inputs.paths }}
+          RELEASES: ${{ inputs.releases }}
         run: |
           set -euo pipefail
 
           # A release builds the released images; scheduled and manual runs build everything
-          if [[ -n "$RELEASED_PATHS" ]]; then
-            MATRIX=$(jq -c --argjson released "$RELEASED_PATHS" '
-              {include: [ .[] | select(.dir as $d | $released | index($d)) ]}
+          if [[ -n "$RELEASES" ]]; then
+            MATRIX=$(jq -c --argjson releases "$RELEASES" '
+              {include: [ .[] | . as $image | $releases[] | select(.dir == $image.dir) | $image + {release: .release} ]}
             ' .github/images.json)
             echo "matrix=${MATRIX}" >> "$GITHUB_OUTPUT"
             jq . <<< "$MATRIX"
@@ -103,7 +103,7 @@ jobs:
     if: needs.detect-changes.outputs.matrix != '{"include":[]}'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write # create the release once the image is published
       security-events: write # upload Trivy results
       id-token: write # keyless cosign signing
     strategy:
@@ -184,19 +184,19 @@ jobs:
           IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/php-grpc
           DIR: ${{ matrix.dir }}
           TAG: ${{ matrix.tag }}
+          RELEASE: ${{ matrix.release }}
         run: |
           TAGS="${IMAGE}:${TAG}"
-
-          # Release version of this image (e.g. 8.4-fpm-1.2.3), kept in sync by release-please
-          RELEASE=$(jq -r --arg dir "$DIR" '.[$dir] // empty' .release-please-manifest.json)
-          if [[ -n "$RELEASE" ]]; then
-            TAGS+=$'\n'"${IMAGE}:${TAG}-${RELEASE}"
-          fi
 
           # Pinned base images (php:X.Y.Z-...) also get a full-version tag, e.g. 8.2.35-fpm
           VERSION=$(sed -nE 's/^FROM php:([0-9]+\.[0-9]+\.[0-9]+)-.*/\1/p' "${DIR}/Dockerfile")
           if [[ -n "$VERSION" ]]; then
             TAGS+=$'\n'"${IMAGE}:${VERSION}-${TAG#*-}"
+          fi
+
+          # A revision release (8.4.27-fpm-r2) is also pushed under its own tag, so it can be pinned
+          if [[ "$RELEASE" =~ -r[0-9]+$ ]]; then
+            TAGS+=$'\n'"${IMAGE}:${RELEASE}"
           fi
 
           {
@@ -229,3 +229,17 @@ jobs:
           IMAGE: ${{ steps.tags.outputs.image }}
           DIGEST: ${{ steps.push.outputs.digest }}
         run: cosign sign --yes "${IMAGE}@${DIGEST}"
+
+      # The release is created last, so an image that was not published never gets one
+      - name: Create release
+        if: inputs.publish && matrix.release != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DIR: ${{ matrix.dir }}
+          TAG: ${{ matrix.tag }}
+          RELEASE: ${{ matrix.release }}
+        run: |
+          git fetch --tags --force --unshallow 2>/dev/null || git fetch --tags --force
+          .github/scripts/release-notes.sh "$DIR" "$TAG" "$RELEASE" > release-notes.md
+          gh release create "$RELEASE" --target "$GITHUB_SHA" --title "$RELEASE" --notes-file release-notes.md --latest=false

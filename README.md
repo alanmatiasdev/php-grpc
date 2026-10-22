@@ -99,7 +99,7 @@ Every image built from an official `php` base also gets a tag with the full PHP 
 | `8.3-fpm`         | `8.3.36-fpm`          |
 | `8.4-fpm-alpine`  | `8.4.27-fpm-alpine`   |
 
-The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags (`8.4-fpm`) point to the latest release of that image. Pinned tags (`8.4.27-fpm`) keep the PHP version but can be republished by a later release of the same image. Each release also gets a tag with its version, e.g. `8.4-fpm-1.0.0`, which you can pin to.
+The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags (`8.4-fpm`) point to the latest release of that image. `8.4.27-fpm` always points to the latest revision built on PHP 8.4.27. A change to an image that does not move PHP is published as a revision, `8.4.27-fpm-r2`, `8.4.27-fpm-r3` and so on, which you can pin to.
 
 ```bash
 docker pull alanmatias/php-grpc:8.4.27-fpm
@@ -107,7 +107,7 @@ docker pull alanmatias/php-grpc:8.4.27-fpm
 
 ### Releases and changelogs
 
-Each image has its own [GitHub release](https://github.com/alanmatiasdev/php-grpc/releases) and changelog, versioned with [Semantic Versioning](https://semver.org/). Releases are created automatically by [release-please](https://github.com/googleapis/release-please) from [Conventional Commits](https://www.conventionalcommits.org/) and tagged `<php>-<variant>/vX.Y.Z`, for example `8.4-fpm/v1.0.0`. The changelog sits next to the Dockerfile (`8.4/fpm/CHANGELOG.md`), and images are pushed to the registry only when a release is cut. The release version tracks changes to the image definition; the PHP patch version is in the Docker tag (`8.4.27-fpm`). Repository-wide notes are in [CHANGELOG.md](CHANGELOG.md).
+Each image has its own [GitHub release](https://github.com/alanmatiasdev/php-grpc/releases) with its own changelog, named after the PHP version it ships: `8.4.27-fpm`, `8.4.27-cli-alpine3.21`, `8.4.27-test-runner`. A new PHP version cuts a new release automatically (Dependabot proposes the base image bump). A change that keeps the same PHP version, such as a fix or a new extension version, cuts a revision of the same release: `8.4.27-fpm-r2`. Releases are generated from [Conventional Commits](https://www.conventionalcommits.org/) that touch the image's directory (`feat`, `fix`, `perf`, `revert` or a breaking change; `docs`, `ci` and `chore` do not cut a release), and images are pushed to the registry only when a release is cut. Repository-wide notes are in [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
 

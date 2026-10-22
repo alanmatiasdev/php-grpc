@@ -22,7 +22,7 @@ updates:
     cooldown:
       default-days: 7
     commit-message:
-      # "fix" makes release-please cut a patch release of the image whose base was bumped
+      # "fix" lets a base image bump cut a release of the image that was bumped
       prefix: "fix(docker)"
     ignore:
       # Each directory tracks one PHP minor line; only patch releases should be proposed

@@ -1,0 +1,53 @@
+name: Release
+
+# Releases follow the PHP version of each image (8.4.27-fpm, then 8.4.27-fpm-r2 for a change that
+# does not move PHP). The images that need a release are built, scanned and pushed to the
+# registry, and each release is created once its image is published.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      releases: ${{ steps.plan.outputs.releases }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Plan releases
+        id: plan
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+          RELEASES=$(.github/scripts/plan-releases.sh)
+          echo "releases=${RELEASES}" >> "$GITHUB_OUTPUT"
+          jq . <<< "$RELEASES"
+
+  publish:
+    needs: plan
+    if: needs.plan.outputs.releases != '[]'
+    permissions:
+      contents: write # create the releases
+      security-events: write # upload Trivy results
+      id-token: write # keyless cosign signing
+    uses: ./.github/workflows/docker-build.yml
+    with:
+      publish: true
+      releases: ${{ needs.plan.outputs.releases }}
+    secrets:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}

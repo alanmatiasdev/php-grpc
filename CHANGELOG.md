@@ -51,6 +51,7 @@ Differences you may notice:
 
 - Build inputs are pinned: `install-php-extensions` (with checksum), `grpc` 1.84.0, `protobuf`
   5.36.2, Composer and the Node.js image by digest.
-- Images are pushed to the registry only when a release is cut. Releases are created per image by
-  release-please from Conventional Commits, tagged `<php>-<variant>/vX.Y.Z`, and each has its own
-  `CHANGELOG.md` next to the Dockerfile. A weekly run builds and scans without publishing.
+- Images are pushed to the registry only when a release is cut. Releases are per image and named
+  after the PHP version (`8.4.27-fpm`, and `8.4.27-fpm-r2` for a change that keeps the same PHP
+  version), with notes generated from the Conventional Commits that touched the image. A weekly
+  run builds and scans without publishing.
