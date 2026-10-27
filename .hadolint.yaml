@@ -3,3 +3,5 @@ ignored:
   # Package versions come from the pinned base image; pinning them here would break every base update
   - DL3008
   - DL3018
+  # Base images lag behind distro security fixes; upgrading at build time picks them up before Trivy gates the image
+  - DL3005

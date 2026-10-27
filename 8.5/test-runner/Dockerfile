@@ -7,6 +7,7 @@ ARG GRPC_VERSION=1.84.0
 ARG PROTOBUF_VERSION=5.36.2
 ARG NPM_VERSION=12.2.1
 ARG YARN_VERSION=1.22.22
+ARG UNDICI_VERSION=6.29.1
 
 ENV COMPOSER_HOME=/composer \
     COMPOSER_ALLOW_SUPERUSER=1 \
@@ -22,7 +23,7 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
-    apt-get update && apt-get install -y --no-install-recommends \
+    apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         git \
         mariadb-client \
         unzip; \
@@ -36,4 +37,10 @@ RUN set -eux; \
     ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm; \
     ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx; \
     npm install -g "npm@${NPM_VERSION}" "yarn@${YARN_VERSION}"; \
+    # npm bundles an undici with CVE-2026-109869; swap in the patched release until npm ships it
+    undici_tmp="$(mktemp -d)"; \
+    (cd "$undici_tmp" && npm pack "undici@${UNDICI_VERSION}" --silent && tar -xzf undici-*.tgz); \
+    rm -rf /usr/local/lib/node_modules/npm/node_modules/undici; \
+    cp -r "$undici_tmp/package" /usr/local/lib/node_modules/npm/node_modules/undici; \
+    rm -rf "$undici_tmp"; \
     npm cache clean --force
