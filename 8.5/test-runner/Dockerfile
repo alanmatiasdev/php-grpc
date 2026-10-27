@@ -39,7 +39,8 @@ RUN set -eux; \
     npm install -g "npm@${NPM_VERSION}" "yarn@${YARN_VERSION}"; \
     # npm bundles an undici with CVE-2026-109869; swap in the patched release until npm ships it
     undici_tmp="$(mktemp -d)"; \
-    (cd "$undici_tmp" && npm pack "undici@${UNDICI_VERSION}" --silent && tar -xzf undici-*.tgz); \
+    npm pack "undici@${UNDICI_VERSION}" --silent --pack-destination "$undici_tmp"; \
+    tar -xzf "$undici_tmp"/undici-*.tgz -C "$undici_tmp"; \
     rm -rf /usr/local/lib/node_modules/npm/node_modules/undici; \
     cp -r "$undici_tmp/package" /usr/local/lib/node_modules/npm/node_modules/undici; \
     rm -rf "$undici_tmp"; \
