@@ -1,4 +1,4 @@
-FROM php:8.4.27-cli-alpine3.24
+FROM php:8.4.28RC1-cli-alpine3.24
 LABEL maintainer="Alan Matias <me@alanmatias.dev>"
 
 ARG GRPC_VERSION=1.84.0
