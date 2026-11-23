@@ -33,7 +33,7 @@ RUN set -eux; \
         mariadb-client \
         unzip; \
     install-php-extensions \
-        bcmath bz2 calendar exif gd gettext gmp imap intl ldap mysqli opcache pcntl pcov \
+        bcmath bz2 calendar exif gd gettext gmp imap intl ldap mbstring mysqli opcache pcntl pcov \
         pdo_mysql pdo_pgsql pgsql shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
         grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
     cp /tmp/php_config.h.orig /usr/local/include/php/main/php_config.h; \
