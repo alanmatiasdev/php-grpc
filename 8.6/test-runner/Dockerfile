@@ -23,15 +23,17 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
-    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' > /tmp/xtoffsetof.h; \
+    cp /usr/local/include/php/main/php_config.h /tmp/php_config.h.orig; \
+    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' >> /usr/local/include/php/main/php_config.h; \
     apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         git \
         mariadb-client \
         unzip; \
-    CFLAGS="-include /tmp/xtoffsetof.h" CXXFLAGS="-include /tmp/xtoffsetof.h" install-php-extensions \
+    install-php-extensions \
         bcmath bz2 calendar exif gd gettext gmp imap intl ldap mysqli opcache pcntl pcov \
         pdo_mysql pdo_pgsql pgsql redis shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
         grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
+    cp /tmp/php_config.h.orig /usr/local/include/php/main/php_config.h; \
     printf 'memory_limit=-1\n' > "$PHP_INI_DIR/conf.d/zz-test-runner.ini"; \
     apt-get clean && rm -rf /var/lib/apt/lists/*; \
     rm -rf /usr/local/lib/node_modules/corepack; \

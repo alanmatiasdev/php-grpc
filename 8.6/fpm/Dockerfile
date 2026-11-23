@@ -10,12 +10,14 @@ COPY --from=composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035
 
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
-    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' > /tmp/xtoffsetof.h; \
+    cp /usr/local/include/php/main/php_config.h /tmp/php_config.h.orig; \
+    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' >> /usr/local/include/php/main/php_config.h; \
     apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         unzip \
         zlib1g-dev \
         libzip-dev; \
-    CFLAGS="-include /tmp/xtoffsetof.h" CXXFLAGS="-include /tmp/xtoffsetof.h" install-php-extensions grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
+    install-php-extensions grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
+    cp /tmp/php_config.h.orig /usr/local/include/php/main/php_config.h; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
         zlib1g-dev \
         libzip-dev; \
