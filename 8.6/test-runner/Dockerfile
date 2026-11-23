@@ -31,7 +31,7 @@ RUN set -eux; \
         unzip; \
     install-php-extensions \
         bcmath bz2 calendar exif gd gettext gmp imap intl ldap mysqli opcache pcntl pcov \
-        pdo_mysql pdo_pgsql pgsql redis shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
+        pdo_mysql pdo_pgsql pgsql phpredis/phpredis@a17268cf750e552a86ce20d16e18e7fb6b384384 shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
         grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
     cp /tmp/php_config.h.orig /usr/local/include/php/main/php_config.h; \
     printf 'memory_limit=-1\n' > "$PHP_INI_DIR/conf.d/zz-test-runner.ini"; \
