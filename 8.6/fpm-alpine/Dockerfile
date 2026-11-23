@@ -8,8 +8,9 @@ ADD --checksum=sha256:d7ecb2087962a272c1d9806069ff6095cd25bf6553d7452db2007db5fa
 
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
+    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' > /tmp/xtoffsetof.h; \
     apk upgrade --no-cache; \
-    install-php-extensions grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}
+    CFLAGS="-include /tmp/xtoffsetof.h" CXXFLAGS="-include /tmp/xtoffsetof.h" install-php-extensions grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}
 
 COPY --from=composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee /usr/bin/composer /usr/bin/composer
 

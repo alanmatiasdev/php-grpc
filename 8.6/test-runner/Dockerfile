@@ -23,11 +23,12 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
+    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' > /tmp/xtoffsetof.h; \
     apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         git \
         mariadb-client \
         unzip; \
-    install-php-extensions \
+    CFLAGS="-include /tmp/xtoffsetof.h" CXXFLAGS="-include /tmp/xtoffsetof.h" install-php-extensions \
         bcmath bz2 calendar exif gd gettext gmp imap intl ldap mysqli opcache pcntl pcov \
         pdo_mysql pdo_pgsql pgsql redis shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
         grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
