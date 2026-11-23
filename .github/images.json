@@ -14,5 +14,9 @@
   { "dir": "8.5/fpm", "tag": "8.5-fpm" },
   { "dir": "8.5/fpm-alpine", "tag": "8.5-fpm-alpine" },
   { "dir": "8.5/cli-alpine", "tag": "8.5-cli-alpine3.21" },
-  { "dir": "8.5/test-runner", "tag": "8.5-test-runner" }
+  { "dir": "8.5/test-runner", "tag": "8.5-test-runner" },
+  { "dir": "8.6/fpm", "tag": "8.6-fpm" },
+  { "dir": "8.6/fpm-alpine", "tag": "8.6-fpm-alpine" },
+  { "dir": "8.6/cli-alpine", "tag": "8.6-cli-alpine3.21" },
+  { "dir": "8.6/test-runner", "tag": "8.6-test-runner" }
 ]

@@ -1,6 +1,6 @@
 FROM node:24-bookworm-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c AS node
 
-FROM php:8.5.12-cli
+FROM php:8.5.13-cli
 LABEL maintainer="Alan Matias <me@alanmatias.dev>"
 
 ARG GRPC_VERSION=1.84.0

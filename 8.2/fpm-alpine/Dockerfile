@@ -1,4 +1,4 @@
-FROM php:8.2.35-fpm-alpine
+FROM php:8.2.36-fpm-alpine
 LABEL maintainer="Alan Matias <me@alanmatias.dev>"
 
 ARG GRPC_VERSION=1.84.0

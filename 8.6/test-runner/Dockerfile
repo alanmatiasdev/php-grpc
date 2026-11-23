@@ -1,0 +1,47 @@
+FROM node:24-bookworm-slim@sha256:c86ecead9e55a5210ac1727de38a4ca840bf03dcaf34dc9749addbf383b1920c AS node
+
+FROM php:8.6.0-cli
+LABEL maintainer="Alan Matias <me@alanmatias.dev>"
+
+ARG GRPC_VERSION=1.84.0
+ARG PROTOBUF_VERSION=5.36.2
+ARG NPM_VERSION=12.2.1
+ARG YARN_VERSION=1.22.22
+ARG UNDICI_VERSION=6.29.1
+
+ENV COMPOSER_HOME=/composer \
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    PATH=./vendor/bin:/composer/vendor/bin:/root/.yarn/bin:${PATH}
+
+ADD --checksum=sha256:9c26dd516b8147235c4e924c52e2f076fb2b3f278f5457e88918518ebfee9e01 https://github.com/mlocati/docker-php-extension-installer/releases/download/2.12.3/install-php-extensions /usr/local/bin/
+
+COPY --from=composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035672e84c2010fee /usr/bin/composer /usr/bin/composer
+
+# Node.js from the official image; npm is upgraded because the bundled one lags behind security fixes
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
+COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
+
+RUN set -eux; \
+    chmod +x /usr/local/bin/install-php-extensions; \
+    apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
+        git \
+        mariadb-client \
+        unzip; \
+    install-php-extensions \
+        bcmath bz2 calendar exif gd gettext gmp imap intl ldap mysqli opcache pcntl pcov \
+        pdo_mysql pdo_pgsql pgsql redis shmop soap sockets sysvmsg sysvsem sysvshm xsl zip \
+        grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
+    printf 'memory_limit=-1\n' > "$PHP_INI_DIR/conf.d/zz-test-runner.ini"; \
+    apt-get clean && rm -rf /var/lib/apt/lists/*; \
+    rm -rf /usr/local/lib/node_modules/corepack; \
+    ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm; \
+    ln -s ../lib/node_modules/npm/bin/npx-cli.js /usr/local/bin/npx; \
+    npm install -g "npm@${NPM_VERSION}" "yarn@${YARN_VERSION}"; \
+    # npm bundles an undici with CVE-2026-109869; swap in the patched release until npm ships it
+    undici_tmp="$(mktemp -d)"; \
+    npm pack "undici@${UNDICI_VERSION}" --silent --pack-destination "$undici_tmp"; \
+    tar -xzf "$undici_tmp"/undici-*.tgz -C "$undici_tmp"; \
+    rm -rf /usr/local/lib/node_modules/npm/node_modules/undici; \
+    cp -r "$undici_tmp/package" /usr/local/lib/node_modules/npm/node_modules/undici; \
+    rm -rf "$undici_tmp"; \
+    npm cache clean --force

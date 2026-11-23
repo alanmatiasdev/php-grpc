@@ -3,7 +3,7 @@
 [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-alanmatias-blue)](https://hub.docker.com/u/alanmatias)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://github.com/alanmatias/php-grpc/graphs/commit-activity)
 
-Pre-built Docker images with PHP 8.2, 8.3, 8.4 and 8.5 and gRPC/Protobuf extensions ready to use.
+Pre-built Docker images with PHP 8.2, 8.3, 8.4, 8.5 and 8.6 and gRPC/Protobuf extensions ready to use.
 
 ## Available Images
 
@@ -25,6 +25,10 @@ Pre-built Docker images with PHP 8.2, 8.3, 8.4 and 8.5 and gRPC/Protobuf extensi
 | `php-grpc:8.5-fpm-alpine`  | php:8.5-fpm-alpine      | Lightweight production      | ~100MB |
 | `php-grpc:8.5-cli-alpine`  | php:8.5-cli-alpine3.24  | CLI scripts & microservices | ~90MB  |
 | `php-grpc:8.5-test-runner` | php:8.5-cli             | Testing & CI/CD             | —      |
+| `php-grpc:8.6-fpm`         | php:8.6-fpm             | Production web applications | ~200MB |
+| `php-grpc:8.6-fpm-alpine`  | php:8.6-fpm-alpine      | Lightweight production      | ~100MB |
+| `php-grpc:8.6-cli-alpine`  | php:8.6-cli-alpine3.24  | CLI scripts & microservices | ~90MB  |
+| `php-grpc:8.6-test-runner` | php:8.6-cli             | Testing & CI/CD             | —      |
 
 ## Getting Images
 
@@ -54,6 +58,12 @@ docker pull alanmatias/php-grpc:8.5-fpm
 docker pull alanmatias/php-grpc:8.5-fpm-alpine
 docker pull alanmatias/php-grpc:8.5-cli-alpine
 docker pull alanmatias/php-grpc:8.5-test-runner
+
+# PHP 8.6
+docker pull alanmatias/php-grpc:8.6-fpm
+docker pull alanmatias/php-grpc:8.6-fpm-alpine
+docker pull alanmatias/php-grpc:8.6-cli-alpine
+docker pull alanmatias/php-grpc:8.6-test-runner
 ```
 
 **Docker Hub Repository**: [alanmatias/php-grpc](https://hub.docker.com/r/alanmatias/php-grpc)
@@ -84,9 +94,15 @@ docker pull alanmatias/php-grpc:8.5-test-runner
 - `8.5-cli-alpine` - CLI-only Alpine image
 - `8.5-test-runner` - Testing and CI/CD image
 
+**PHP 8.6**
+- `8.6-fpm` - Full Debian-based FPM image
+- `8.6-fpm-alpine` - Lightweight Alpine FPM image
+- `8.6-cli-alpine` - CLI-only Alpine image
+- `8.6-test-runner` - Testing and CI/CD image
+
 ### Security
 
-The current images are built on PHP 8.2.35, 8.3.36, 8.4.27 and 8.5.12, which fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 announced on 21 October 2026. See the [PHP security announcement](https://www.php.net/archive/2026.php#2026-10-21-5) for details. If you pinned an older version tag, update to the tags above.
+The current images are built on PHP 8.2.36, 8.3.37, 8.4.28, 8.5.13 and 8.6.0, which fix the critical remote code execution vulnerabilities CVE-2026-109618 and CVE-2026-109619 announced on 21 October 2026. See the [PHP security announcement](https://www.php.net/archive/2026.php#2026-10-21-5) for details. If you pinned an older version tag, update to the tags above.
 
 > **Alpine users:** images published before this fix could not load the `grpc` extension (missing `libstdc++`). Pull the Alpine tags again; see the [changelog](CHANGELOG.md) for how to check.
 
@@ -110,25 +126,26 @@ Every image built from an official `php` base also gets a tag with the full PHP 
 
 | Floating tag      | Pinned tag (example)  |
 | ----------------- | --------------------- |
-| `8.2-fpm`         | `8.2.35-fpm`          |
-| `8.2-fpm-alpine`  | `8.2.35-fpm-alpine`   |
-| `8.3-fpm`         | `8.3.36-fpm`          |
-| `8.4-fpm-alpine`  | `8.4.27-fpm-alpine`   |
-| `8.5-fpm`         | `8.5.12-fpm`          |
+| `8.2-fpm`         | `8.2.36-fpm`          |
+| `8.2-fpm-alpine`  | `8.2.36-fpm-alpine`   |
+| `8.3-fpm`         | `8.3.37-fpm`          |
+| `8.4-fpm-alpine`  | `8.4.28-fpm-alpine`   |
+| `8.5-fpm`         | `8.5.13-fpm`          |
+| `8.6-fpm`         | `8.6.0-fpm`           |
 
-The same pattern applies to `cli-alpine` (e.g. `8.4.27-cli-alpine3.21`). Floating tags (`8.4-fpm`) point to the latest release of that image. `8.4.27-fpm` always points to the latest revision built on PHP 8.4.27. A change to an image that does not move PHP is published as a revision, `8.4.27-fpm-r2`, `8.4.27-fpm-r3` and so on, which you can pin to.
+The same pattern applies to `cli-alpine` (e.g. `8.4.28-cli-alpine3.21`). Floating tags (`8.4-fpm`) point to the latest release of that image. `8.4.28-fpm` always points to the latest revision built on PHP 8.4.27. A change to an image that does not move PHP is published as a revision, `8.4.28-fpm-r2`, `8.4.28-fpm-r3` and so on, which you can pin to.
 
 ```bash
-docker pull alanmatias/php-grpc:8.4.27-fpm
+docker pull alanmatias/php-grpc:8.4.28-fpm
 ```
 
 ### Releases and changelogs
 
-Each image has its own [GitHub release](https://github.com/alanmatiasdev/php-grpc/releases) with its own changelog, named after the PHP version it ships: `8.4.27-fpm`, `8.4.27-cli-alpine3.21`, `8.4.27-test-runner`. A new PHP version cuts a new release automatically (Dependabot proposes the base image bump). A change that keeps the same PHP version, such as a fix or a new extension version, cuts a revision of the same release: `8.4.27-fpm-r2`. Releases are generated from [Conventional Commits](https://www.conventionalcommits.org/) that touch the image's directory (`feat`, `fix`, `perf`, `revert` or a breaking change; `docs`, `ci` and `chore` do not cut a release), and images are pushed to the registry when a release is cut and by the weekly rebuild (which does not create a release). Repository-wide notes are in [CHANGELOG.md](CHANGELOG.md).
+Each image has its own [GitHub release](https://github.com/alanmatiasdev/php-grpc/releases) with its own changelog, named after the PHP version it ships: `8.4.28-fpm`, `8.4.28-cli-alpine3.21`, `8.4.28-test-runner`. A new PHP version cuts a new release automatically (Dependabot proposes the base image bump). A change that keeps the same PHP version, such as a fix or a new extension version, cuts a revision of the same release: `8.4.28-fpm-r2`. Releases are generated from [Conventional Commits](https://www.conventionalcommits.org/) that touch the image's directory (`feat`, `fix`, `perf`, `revert` or a breaking change; `docs`, `ci` and `chore` do not cut a release), and images are pushed to the registry when a release is cut and by the weekly rebuild (which does not create a release). Repository-wide notes are in [CHANGELOG.md](CHANGELOG.md).
 
 ## Features
 
-- ✅ PHP 8.2, 8.3, 8.4 and 8.5 with gRPC extension
+- ✅ PHP 8.2, 8.3, 8.4, 8.5 and 8.6 with gRPC extension
 - ✅ Protobuf extension included
 - ✅ Composer pre-installed
 - ✅ Optimized for production use
@@ -259,7 +276,7 @@ Both include:
 
 - `grpc` - gRPC extension for PHP
 - `protobuf` - Protocol Buffers extension
-- Standard PHP extensions (8.2, 8.3, 8.4 and 8.5)
+- Standard PHP extensions (8.2, 8.3, 8.4, 8.5 and 8.6)
 
 ## Environment Variables
 
@@ -274,7 +291,7 @@ Both include:
 git clone https://github.com/alanmatias/php-grpc.git
 cd php-grpc
 
-# Build specific variant (replace 8.2 with 8.3, 8.4 or 8.5 as needed)
+# Build specific variant (replace 8.2 with 8.3, 8.4, 8.5 or 8.6 as needed)
 docker build -t my-php-grpc:fpm ./8.2/fpm
 docker build -t my-php-grpc:cli ./8.2/cli-alpine
 docker build -t my-php-grpc:test ./8.2/test-runner

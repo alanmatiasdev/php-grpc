@@ -8,8 +8,15 @@ entries are grouped by change rather than by version.
 
 ### Added
 
+- PHP 8.6 images (`8.6-fpm`, `8.6-fpm-alpine`, `8.6-cli-alpine`, `8.6-test-runner`), built on PHP 8.6.0
+  with the same pinned inputs, scan and signing as the other versions.
 - PHP 8.5 images (`8.5-fpm`, `8.5-fpm-alpine`, `8.5-cli-alpine`, `8.5-test-runner`), built on PHP 8.5.12
   with the same pinned inputs, scan and signing as the other versions.
+
+### Changed
+
+- Base images updated to PHP 8.2.36, 8.3.37, 8.4.28 and 8.5.13, and the Node.js base of the
+  test-runner images to its latest digest.
 
 ### Fixed
 
