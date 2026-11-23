@@ -9,7 +9,7 @@ ADD --checksum=sha256:d7ecb2087962a272c1d9806069ff6095cd25bf6553d7452db2007db5fa
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
     cp /usr/local/include/php/main/php_config.h /tmp/php_config.h.orig; \
-    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' >> /usr/local/include/php/main/php_config.h; \
+    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n#define zval_dtor(z) zval_ptr_dtor_nogc(z)\n' >> /usr/local/include/php/main/php_config.h; \
     apk upgrade --no-cache; \
     install-php-extensions grpc-${GRPC_VERSION} protobuf-${PROTOBUF_VERSION}; \
     cp /tmp/php_config.h.orig /usr/local/include/php/main/php_config.h

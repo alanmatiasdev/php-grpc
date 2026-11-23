@@ -11,7 +11,7 @@ COPY --from=composer:2@sha256:da624c2c705d54e2f5a9bb77a5dc6c7d091711433ebefd7035
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
     cp /usr/local/include/php/main/php_config.h /tmp/php_config.h.orig; \
-    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n' >> /usr/local/include/php/main/php_config.h; \
+    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n#define zval_dtor(z) zval_ptr_dtor_nogc(z)\n' >> /usr/local/include/php/main/php_config.h; \
     apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         unzip \
         zlib1g-dev \
