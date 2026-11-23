@@ -24,7 +24,7 @@ COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 RUN set -eux; \
     chmod +x /usr/local/bin/install-php-extensions; \
     cp /usr/local/include/php/main/php_config.h /tmp/php_config.h.orig; \
-    printf '#include <stddef.h>\n#define XtOffsetOf(s, f) offsetof(s, f)\n#define zval_dtor(z) zval_ptr_dtor_nogc(z)\n' >> /usr/local/include/php/main/php_config.h; \
+    printf '#include <stddef.h>\n#include <string.h>\n#define INI_STR(name) zend_ini_string_ex((name), strlen(name), 0, NULL)\n#define XtOffsetOf(s, f) offsetof(s, f)\n#define zval_dtor(z) zval_ptr_dtor_nogc(z)\n' >> /usr/local/include/php/main/php_config.h; \
     apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         git \
         mariadb-client \
